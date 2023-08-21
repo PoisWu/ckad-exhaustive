@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: business-app
+spec: 
+  initContainers:
+    - name: configurer
+      image: busybox
+      volumeMounts:
+        - mountPath: /usr/shared/app
+          name: vol
+      command: ['sh', '-c', 'wget -P /usr/shared/app/ https://raw.githubusercontent.com/bmuschko/ckad-crash-course/master/exercises/07-init-container/app/config/config.json']
+  containers:
+    - name: web
+      image: bmuschko/nodejs-read-config:1.0.0
+      ports:
+        - containerPort: 8080
+      volumeMounts:
+        - mountPath: /usr/shared/app
+          name: vol
+  volumes:
+    - name: vol
+      emptyDir: {}
